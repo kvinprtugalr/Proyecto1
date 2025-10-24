@@ -1,0 +1,21 @@
+# Visual Studio
+.vs/
+
+# Carpetas de compilación
+bin/
+obj/
+
+# Archivos generados
+*.exe
+*.dll
+*.pdb
+*.cache
+*.log
+
+# Archivos de usuario de Visual Studio
+*.user
+*.suo
+*.csproj.user
+*.userosscache
+*.sln.docstates
+
