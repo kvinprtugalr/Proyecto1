@@ -17,8 +17,9 @@ namespace Proyecto1
         {
 
             lstHistorial.Items.Clear();
-            // 1️⃣ Guardamos la operación
+            // Guardamos la operación
             string operacion = txtCalculo.Text;
+            // Asignamos el resultado 
             txtCalculo.Text = "3";
             string resultado = txtCalculo.Text;
 
@@ -66,17 +67,17 @@ namespace Proyecto1
 
         private void btnCuatro_Click(object sender, EventArgs e)
         {
-            txtCalculo.Text = "4";
+            txtCalculo.Text += "4";
         }
 
         private void btnCinco_Click(object sender, EventArgs e)
         {
-            txtCalculo.Text = "5";
+            txtCalculo.Text += "5";
         }
 
         private void btnSeis_Click(object sender, EventArgs e)
         {
-            txtCalculo.Text = "6";
+            txtCalculo.Text += "6";
         }
 
         private void btnSiete_Click(object sender, EventArgs e)
