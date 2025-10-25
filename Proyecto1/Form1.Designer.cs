@@ -109,6 +109,7 @@
             btnSigno.TabIndex = 4;
             btnSigno.Text = "+/-";
             btnSigno.UseVisualStyleBackColor = true;
+            btnSigno.Click += btnSigno_Click;
             // 
             // btnDos
             // 
@@ -148,6 +149,7 @@
             btnPuntoDec.TabIndex = 8;
             btnPuntoDec.Text = ".";
             btnPuntoDec.UseVisualStyleBackColor = true;
+            btnPuntoDec.Click += btnPuntoDec_Click;
             // 
             // btnTres
             // 
@@ -237,6 +239,7 @@
             btnPorcentaje.TabIndex = 17;
             btnPorcentaje.Text = "%";
             btnPorcentaje.UseVisualStyleBackColor = true;
+            btnPorcentaje.Click += btnPorcentaje_Click;
             // 
             // btnCuadrado
             // 
@@ -246,6 +249,7 @@
             btnCuadrado.TabIndex = 18;
             btnCuadrado.Text = "x²\r\n";
             btnCuadrado.UseVisualStyleBackColor = true;
+            btnCuadrado.Click += btnCuadrado_Click;
             // 
             // btnRaiz
             // 
@@ -255,6 +259,7 @@
             btnRaiz.TabIndex = 19;
             btnRaiz.Text = "√";
             btnRaiz.UseVisualStyleBackColor = true;
+            btnRaiz.Click += btnRaiz_Click;
             // 
             // btnBorrar
             // 
@@ -264,6 +269,7 @@
             btnBorrar.TabIndex = 20;
             btnBorrar.Text = "<--";
             btnBorrar.UseVisualStyleBackColor = true;
+            btnBorrar.Click += btnBorrar_Click;
             // 
             // btnCE
             // 
@@ -273,6 +279,7 @@
             btnCE.TabIndex = 21;
             btnCE.Text = "CE";
             btnCE.UseVisualStyleBackColor = true;
+            btnCE.Click += btnCE_Click;
             // 
             // btnC
             // 
@@ -282,6 +289,7 @@
             btnC.TabIndex = 22;
             btnC.Text = "C";
             btnC.UseVisualStyleBackColor = true;
+            btnC.Click += btnC_Click;
             // 
             // btnMostrar
             // 
@@ -291,6 +299,7 @@
             btnMostrar.TabIndex = 23;
             btnMostrar.Text = "Mostrar Calculo";
             btnMostrar.UseVisualStyleBackColor = true;
+            btnMostrar.Click += btnMostrar_Click;
             // 
             // btnHex
             // 
