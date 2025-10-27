@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
+using System;
 using System.Data;
 using System.Windows.Forms;
 
@@ -8,6 +9,7 @@ namespace Proyecto1
     {
         string connectionString = @"Server=.;Database=CalculadoraDB;TrustServerCertificate=True;Integrated Security=SSPI;";
         string operacion = "";
+
         public Form1()
         {
             InitializeComponent();
@@ -15,34 +17,38 @@ namespace Proyecto1
 
         private void btnIgual_Click(object sender, EventArgs e)
         {
-
-            lstHistorial.Items.Clear();
-            // Guardamos la operación
-            string operacion = txtCalculo.Text;
-            // Asignamos el resultado 
-            txtCalculo.Text = "3";
-            string resultado = txtCalculo.Text;
-
-
-            // Guardar en la base de datos
-            string sql = "INSERT INTO Operaciones (Operacion, Resultado)" + "VALUES ('" + operacion + "', '" + resultado + "')";
-            SqlConnection con = new SqlConnection(connectionString);
-            SqlCommand cmd = new SqlCommand(sql, con);
-            cmd.CommandType = CommandType.Text;
-            con.Open();
             try
             {
-                cmd.ExecuteNonQuery(); // se guarda en la base de datos
+                // Guardamos la operación escrita antes de calcular
+                string operacionActual = txtCalculo.Text;
+
+                // Calculamos el resultado
+                var resultado = new DataTable().Compute(operacionActual, "");
+                string resultadoTexto = resultado.ToString();
+
+                // Mostramos el resultado en el TextBox
+                txtCalculo.Text = resultadoTexto;
+
+                // Agregamos la operación al historial visual
+                lstHistorial.Items.Add($"{operacionActual} = {resultadoTexto}");
+
+                // Guardar en la base de datos con parámetros seguros
+                string sql = "INSERT INTO Operaciones (Operacion, Resultado, Fecha) VALUES (@Operacion, @Resultado, GETDATE())";
+
+                using (SqlConnection con = new SqlConnection(connectionString))
+                using (SqlCommand cmd = new SqlCommand(sql, con))
+                {
+                    cmd.Parameters.AddWithValue("@Operacion", operacionActual);
+                    cmd.Parameters.AddWithValue("@Resultado", resultadoTexto);
+
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error: " + ex.ToString());
+                MessageBox.Show("Error en la operación: " + ex.Message);
             }
-            finally
-            {
-                con.Close(); // siempre cierra la conexión
-            }
-
         }
 
         private void btnCero_Click(object sender, EventArgs e)
@@ -105,11 +111,6 @@ namespace Proyecto1
             txtCalculo.Text += "-";
         }
 
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
-        }
-
         private void btnMultiplicar_Click(object sender, EventArgs e)
         {
             txtCalculo.Text += "*";
@@ -124,7 +125,6 @@ namespace Proyecto1
         {
             txtCalculo.Text += ".";
         }
-
         private void btnSigno_Click(object sender, EventArgs e)
         {
             if (txtCalculo.Text != "")
