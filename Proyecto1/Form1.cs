@@ -206,4 +206,89 @@ namespace Proyecto1
                 }
             }
         }
+
+        private void lstHistorial_SelectedIndexChanged(object sender, EventArgs e)
+        {
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+        }
+
+        private void btnHex_Click(object sender, EventArgs e)
+        {
+            if (double.TryParse(txtCalculo.Text, out double numero))
+            {
+                // Convertimos a entero primero
+                int entero = (int)numero;
+                // Convertimos a hexadecimal
+                string hex = entero.ToString("X"); // "X" produce letras mayúsculas A-F
+                                                   // Mostramos en el TextBox
+                txtCalculo.Text = hex;
+
+                // Guardamos en el historial visual
+                lstHistorial.Items.Add($"{entero} → HEX = {hex}");
+            }
+            else
+            {
+                MessageBox.Show("Ingrese un número válido para convertir a HEX.");
+            }
+        }
+
+        private void btnBin_Click(object sender, EventArgs e)
+        {
+            if (double.TryParse(txtCalculo.Text, out double numero))
+            {
+                // Convertimos a entero primero
+                int entero = (int)numero;
+                // Convertimos a binario
+                string binario = Convert.ToString(entero, 2); // base 2 para binario
+                                                              // Mostramos en el TextBox
+                txtCalculo.Text = binario;
+
+                // Guardamos en el historial visual
+                lstHistorial.Items.Add($"{entero} → BIN = {binario}");
+            }
+            else
+            {
+                MessageBox.Show("Ingrese un número válido para convertir a BIN.");
+            }
+        }
+
+        private void btnDec_Click(object sender, EventArgs e)
+        {
+            string texto = txtCalculo.Text.Trim();
+
+            try
+            {
+                int numeroDecimal;
+
+                // Detectar si es binario (solo 0 y 1)
+                if (texto.All(c => c == '0' || c == '1'))
+                {
+                    numeroDecimal = Convert.ToInt32(texto, 2); // base 2
+                }
+                // Detectar si es hexadecimal (0-9 y A-F)
+                else
+                {
+                    numeroDecimal = Convert.ToInt32(texto, 16); // base 16
+                }
+
+                // Mostrar resultado en decimal
+                txtCalculo.Text = numeroDecimal.ToString();
+
+                // Guardar en historial
+                lstHistorial.Items.Add($"{texto} → DEC = {numeroDecimal}");
+            }
+            catch
+            {
+                MessageBox.Show("Número inválido para conversión a decimal.");
+            }
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+
+        }
     }
+}
