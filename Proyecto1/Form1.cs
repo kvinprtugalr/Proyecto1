@@ -125,29 +125,38 @@ namespace Proyecto1
         {
             txtCalculo.Text += ".";
         }
+
         private void btnSigno_Click(object sender, EventArgs e)
         {
-            if (txtCalculo.Text != "")
+            if (double.TryParse(txtCalculo.Text, out double numero))
             {
-                double numero = double.Parse(txtCalculo.Text); // convierte el texto a número
-                numero = numero * -1;                          // cambia el signo
-                txtCalculo.Text = numero.ToString();           // reemplaza el TextBox con el nuevo valor
+                numero *= -1;
+                txtCalculo.Text = numero.ToString();
             }
         }
 
         private void btnPorcentaje_Click(object sender, EventArgs e)
         {
-            txtCalculo.Text += "%";
+            if (double.TryParse(txtCalculo.Text, out double numero))
+            {
+                txtCalculo.Text = (numero / 100).ToString();
+            }
         }
 
         private void btnRaiz_Click(object sender, EventArgs e)
         {
-            txtCalculo.Text = "√" + txtCalculo.Text;
+            if (double.TryParse(txtCalculo.Text, out double numero))
+            {
+                txtCalculo.Text = Math.Sqrt(numero).ToString();
+            }
         }
 
         private void btnCuadrado_Click(object sender, EventArgs e)
         {
-            txtCalculo.Text += "^2";
+            if (double.TryParse(txtCalculo.Text, out double numero))
+            {
+                txtCalculo.Text = Math.Pow(numero, 2).ToString();
+            }
         }
 
         private void btnBorrar_Click(object sender, EventArgs e)
