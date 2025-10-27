@@ -183,32 +183,27 @@ namespace Proyecto1
             lstHistorial.Items.Clear(); // Limpiamos antes de mostrar
 
             string sql = "SELECT Operacion, Resultado, Fecha FROM Operaciones ORDER BY Id";
-            SqlConnection con = new SqlConnection(connectionString);
-            SqlCommand cmd = new SqlCommand(sql, con);
-            cmd.CommandType = CommandType.Text;
 
-            con.Open();
-            try
+            using (SqlConnection con = new SqlConnection(connectionString))
+            using (SqlCommand cmd = new SqlCommand(sql, con))
             {
-                SqlDataReader reader = cmd.ExecuteReader();
-                while (reader.Read())
+                con.Open();
+                try
                 {
-                    string operacion = reader["Operacion"].ToString();
-                    string resultado = reader["Resultado"].ToString();
-                    string fecha = reader["Fecha"].ToString();
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        string operacion = reader["Operacion"].ToString();
+                        string resultado = reader["Resultado"].ToString();
+                        string fecha = reader["Fecha"].ToString();
 
-                    lstHistorial.Items.Add(fecha + " → " + operacion + " = " + resultado + Environment.NewLine);
+                        lstHistorial.Items.Add($"{fecha} → {operacion} = {resultado}");
+                    }
                 }
-                reader.Close();
-            }
-            catch
-            {
-                // Si falla no hacemos nada
-            }
-            finally
-            {
-                con.Close();
+                catch
+                {
+                    MessageBox.Show("Error al mostrar el historial.");
+                }
             }
         }
     }
-}
