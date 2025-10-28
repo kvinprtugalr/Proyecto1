@@ -17,39 +17,40 @@ namespace Proyecto1
 
         private void btnIgual_Click(object sender, EventArgs e)
         {
+
+
+            lstHistorial.Items.Clear();
+            // Guardamos la operación
+            string operacion = txtCalculo.Text;
+
+            
+            var resultado = new DataTable().Compute(operacion, null);
+            txtCalculo.Text = resultado.ToString();
+
+            // Agregamos la operación al historial visual
+            lstHistorial.Items.Add($"{operacion} = {resultado}");
+
+            // Guardar en la base de datos
+            string sql = "INSERT INTO Operaciones (Operacion, Resultado)" + "VALUES ('" + operacion + "', '" + resultado + "')";
+            SqlConnection con = new SqlConnection(connectionString);
+            SqlCommand cmd = new SqlCommand(sql, con);
+            cmd.CommandType = CommandType.Text;
+            con.Open();
             try
             {
-                // Guardamos la operación escrita antes de calcular
-                string operacionActual = txtCalculo.Text;
-
-                // Calculamos el resultado
-                var resultado = new DataTable().Compute(operacionActual, "");
-                string resultadoTexto = resultado.ToString();
-
-                // Mostramos el resultado en el TextBox
-                txtCalculo.Text = resultadoTexto;
-
-                // Agregamos la operación al historial visual
-                lstHistorial.Items.Add($"{operacionActual} = {resultadoTexto}");
-
-                // Guardar en la base de datos con parámetros seguros
-                string sql = "INSERT INTO Operaciones (Operacion, Resultado, Fecha) VALUES (@Operacion, @Resultado, GETDATE())";
-
-                using (SqlConnection con = new SqlConnection(connectionString))
-                using (SqlCommand cmd = new SqlCommand(sql, con))
-                {
-                    cmd.Parameters.AddWithValue("@Operacion", operacionActual);
-                    cmd.Parameters.AddWithValue("@Resultado", resultadoTexto);
-
-                    con.Open();
-                    cmd.ExecuteNonQuery();
-                }
+                cmd.ExecuteNonQuery(); // se guarda en la base de datos
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error en la operación: " + ex.Message);
+                MessageBox.Show("Error: " + ex.ToString());
             }
+            finally
+            {
+                con.Close(); // siempre cierra la conexión
+            }
+
         }
+        
 
         private void btnCero_Click(object sender, EventArgs e)
         {
@@ -137,26 +138,105 @@ namespace Proyecto1
 
         private void btnPorcentaje_Click(object sender, EventArgs e)
         {
+            string resultado = "";
+            string operacion = "";
+
             if (double.TryParse(txtCalculo.Text, out double numero))
             {
                 txtCalculo.Text = (numero / 100).ToString();
+            }
+            lstHistorial.Items.Add($"{numero}% = {txtCalculo.Text}");
+            resultado = txtCalculo.Text;
+            operacion = numero + "%";
+
+            // Guardar en la base de datos
+            string sql = "INSERT INTO Operaciones (Operacion, Resultado)" + "VALUES ('" + operacion + "', '" + resultado + "')";
+            SqlConnection con = new SqlConnection(connectionString);
+            SqlCommand cmd = new SqlCommand(sql, con);
+            cmd.CommandType = CommandType.Text;
+            con.Open();
+            try
+            {
+                cmd.ExecuteNonQuery(); // se guarda en la base de datos
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.ToString());
+            }
+            finally
+            {
+                con.Close(); // siempre cierra la conexión
             }
         }
 
         private void btnRaiz_Click(object sender, EventArgs e)
         {
+            string resultado = "";
+            string operacion = "";
             if (double.TryParse(txtCalculo.Text, out double numero))
             {
                 txtCalculo.Text = Math.Sqrt(numero).ToString();
+                resultado = txtCalculo.Text;
+                operacion = "√" + numero;
+            }
+            // Agregamos la operación al historial visual
+            lstHistorial.Items.Add("√" + $"{numero} = {txtCalculo.Text}");
+
+            // Guardar en la base de datos
+            string sql = "INSERT INTO Operaciones (Operacion, Resultado)" + "VALUES ('" + operacion + "', '" + resultado + "')";
+            SqlConnection con = new SqlConnection(connectionString);
+            SqlCommand cmd = new SqlCommand(sql, con);
+            cmd.CommandType = CommandType.Text;
+            con.Open();
+            try
+            {
+                cmd.ExecuteNonQuery(); // se guarda en la base de datos
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.ToString());
+            }
+            finally
+            {
+                con.Close(); // siempre cierra la conexión
             }
         }
 
         private void btnCuadrado_Click(object sender, EventArgs e)
         {
+            string resultado = "";
+            string operacion = "";
+
             if (double.TryParse(txtCalculo.Text, out double numero))
             {
                 txtCalculo.Text = Math.Pow(numero, 2).ToString();
+                resultado = txtCalculo.Text;
+                operacion = numero + "^2";
             }
+
+            // Agregamos la operación al historial visual
+            lstHistorial.Items.Add( $"{numero}^2 = {txtCalculo.Text}");
+
+            // Guardar en la base de datos
+            string sql = "INSERT INTO Operaciones (Operacion, Resultado)" + "VALUES ('" + operacion + "', '" + resultado + "')";
+            SqlConnection con = new SqlConnection(connectionString);
+            SqlCommand cmd = new SqlCommand(sql, con);
+            cmd.CommandType = CommandType.Text;
+            con.Open();
+            try
+            {
+                cmd.ExecuteNonQuery(); // se guarda en la base de datos
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.ToString());
+            }
+            finally
+            {
+                con.Close(); // siempre cierra la conexión
+            }
+
+
         }
 
         private void btnBorrar_Click(object sender, EventArgs e)
@@ -170,12 +250,14 @@ namespace Proyecto1
         private void btnCE_Click(object sender, EventArgs e)
         {
             txtCalculo.Text = ""; // limpia solo el TextBox
+            lstHistorial.Items.Clear();
         }
 
         private void btnC_Click(object sender, EventArgs e)
         {
             txtCalculo.Text = "";   // limpia TextBox
             operacion = "";         // resetea la operación guardada
+            lstHistorial.Items.Clear();
         }
 
         private void btnMostrar_Click(object sender, EventArgs e)
@@ -183,29 +265,35 @@ namespace Proyecto1
             lstHistorial.Items.Clear(); // Limpiamos antes de mostrar
 
             string sql = "SELECT Operacion, Resultado, Fecha FROM Operaciones ORDER BY Id";
+            SqlConnection con = new SqlConnection(connectionString);
+            SqlCommand cmd = new SqlCommand(sql, con);
+            cmd.CommandType = CommandType.Text;
 
-            using (SqlConnection con = new SqlConnection(connectionString))
-            using (SqlCommand cmd = new SqlCommand(sql, con))
+            con.Open();
+            try
             {
-                con.Open();
-                try
+                SqlDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
                 {
-                    SqlDataReader reader = cmd.ExecuteReader();
-                    while (reader.Read())
-                    {
-                        string operacion = reader["Operacion"].ToString();
-                        string resultado = reader["Resultado"].ToString();
-                        string fecha = reader["Fecha"].ToString();
+                    string operacion = reader["Operacion"].ToString();
+                    string resultado = reader["Resultado"].ToString();
+                    string fecha = reader["Fecha"].ToString();
 
-                        lstHistorial.Items.Add($"{fecha} → {operacion} = {resultado}");
-                    }
+                    lstHistorial.Items.Add(fecha + " → " + operacion + " = " + resultado + Environment.NewLine);
                 }
-                catch
-                {
-                    MessageBox.Show("Error al mostrar el historial.");
-                }
+                reader.Close();
             }
+            catch
+            {
+                // Si falla no hacemos nada
+            }
+            finally
+            {
+                con.Close();
+            }
+
         }
+    
 
         private void lstHistorial_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -217,6 +305,9 @@ namespace Proyecto1
 
         private void btnHex_Click(object sender, EventArgs e)
         {
+            string resultado = "";
+            string operacion = "";
+
             if (double.TryParse(txtCalculo.Text, out double numero))
             {
                 // Convertimos a entero primero
@@ -227,16 +318,40 @@ namespace Proyecto1
                 txtCalculo.Text = hex;
 
                 // Guardamos en el historial visual
-                lstHistorial.Items.Add($"{entero} → HEX = {hex}");
+                lstHistorial.Items.Add($"{entero}  HEX = {hex}");
+                operacion = entero.ToString() + " HEX";
+                resultado = txtCalculo.Text;
             }
             else
             {
                 MessageBox.Show("Ingrese un número válido para convertir a HEX.");
             }
+
+            // Guardar en la base de datos
+            string sql = "INSERT INTO Operaciones (Operacion, Resultado)" + "VALUES ('" + operacion + "', '" + resultado + "')";
+            SqlConnection con = new SqlConnection(connectionString);
+            SqlCommand cmd = new SqlCommand(sql, con);
+            cmd.CommandType = CommandType.Text;
+            con.Open();
+            try
+            {
+                cmd.ExecuteNonQuery(); // se guarda en la base de datos
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.ToString());
+            }
+            finally
+            {
+                con.Close(); // siempre cierra la conexión
+            }
         }
 
         private void btnBin_Click(object sender, EventArgs e)
         {
+            string resultado = "";
+            string operacion = "";
+
             if (double.TryParse(txtCalculo.Text, out double numero))
             {
                 // Convertimos a entero primero
@@ -247,21 +362,45 @@ namespace Proyecto1
                 txtCalculo.Text = binario;
 
                 // Guardamos en el historial visual
-                lstHistorial.Items.Add($"{entero} → BIN = {binario}");
+                lstHistorial.Items.Add($"{entero}  BIN = {binario}");
+                operacion = entero.ToString() + " BIN";
+                resultado = txtCalculo.Text;
             }
             else
             {
                 MessageBox.Show("Ingrese un número válido para convertir a BIN.");
+            }
+
+            // Guardar en la base de datos
+            string sql = "INSERT INTO Operaciones (Operacion, Resultado)" + "VALUES ('" + operacion + "', '" + resultado + "')";
+            SqlConnection con = new SqlConnection(connectionString);
+            SqlCommand cmd = new SqlCommand(sql, con);
+            cmd.CommandType = CommandType.Text;
+            con.Open();
+            try
+            {
+                cmd.ExecuteNonQuery(); // se guarda en la base de datos
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.ToString());
+            }
+            finally
+            {
+                con.Close(); // siempre cierra la conexión
             }
         }
 
         private void btnDec_Click(object sender, EventArgs e)
         {
             string texto = txtCalculo.Text.Trim();
+            string resultado = "";
+            string operacion = "";
 
             try
             {
                 int numeroDecimal;
+                
 
                 // Detectar si es binario (solo 0 y 1)
                 if (texto.All(c => c == '0' || c == '1'))
@@ -278,11 +417,32 @@ namespace Proyecto1
                 txtCalculo.Text = numeroDecimal.ToString();
 
                 // Guardar en historial
-                lstHistorial.Items.Add($"{texto} → DEC = {numeroDecimal}");
+                lstHistorial.Items.Add($"{texto} DEC = {numeroDecimal}");
+                operacion = texto + " DEC";
+                resultado = txtCalculo.Text;
             }
             catch
             {
                 MessageBox.Show("Número inválido para conversión a decimal.");
+            }
+
+            // Guardar en la base de datos
+            string sql = "INSERT INTO Operaciones (Operacion, Resultado)" + "VALUES ('" + operacion + "', '" + resultado + "')";
+            SqlConnection con = new SqlConnection(connectionString);
+            SqlCommand cmd = new SqlCommand(sql, con);
+            cmd.CommandType = CommandType.Text;
+            con.Open();
+            try
+            {
+                cmd.ExecuteNonQuery(); // se guarda en la base de datos
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.ToString());
+            }
+            finally
+            {
+                con.Close(); // siempre cierra la conexión
             }
         }
 
